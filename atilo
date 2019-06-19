@@ -1,0 +1,114 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Copyright 2017-2019 by YadominJinta. All rights reserved.
+# https://github.com/YadominJinta/atilo has info about the project.
+# https://github.com/YadominJinta/atilo/blob/master/CONTRIBUTORS.md Thank you for help.
+# _STANDARD_="function name" && STANDARD="variable name" are under construction
+####################################################################################
+
+# Declear Variables
+VER=2.0-dev
+ATILO_DIR=$HOME/.atilo
+ATILO_TMP=$ATILO_DIR/tmp
+ATILO_CONFIG=$PREFIX/etc/atilo
+
+# Create Basic Files
+if [ ! -d $ATILO_TMP ];then
+    mkdir -p $ATILO_TMP
+fi
+
+if [ ! -d $ATILO_CONFIG ];then
+	mkdir $ATILO_CONFIG	
+fi
+
+
+# Init Functions
+_PUT_()
+{
+    echo -e "\033[32m$@\033[0m"
+}
+
+_ERR_()
+{
+    echo -e "\033[1;31m$@\033[0m" 1>&2
+    exit 1
+}
+
+_UP_LOCALES_()
+{
+	j=1
+	LIST=$(curl https://raw.githubusercontent.com/YadominJinta/atilo/dev/src/locales/list)
+	for i in $LIST
+	{
+	 	_OUT_ "$j $i" 
+		 k[j]=$i
+		j=`expr $j += 1`
+	}
+	_OUT_ "Choose a language:"
+	read a
+	curl -o $ATILO_CONFIG/locales "https://raw.githubusercontent.com/YadominJinta/atilo/dev/src/locales/$k[a]"
+}
+
+_UP_SOURCES_()
+{
+	j=1
+	$LIST=$(curl https://raw.githubusercontent.com/YadominJinta/atilo/dev/src/sources/list)
+	for i in $LIST
+	{
+		
+	 	_OUT_ "$j $i" 
+		 k[j]=$i
+		j=`expr $j += 1`
+	}
+	_OUT_ "Choose a source:"
+	read a
+	curl -o $ATILO_CONFIG/sources "https://raw.githubusercontent.com/YadominJinta/atilo/dev/src/sources/$k[a]"
+	}
+}
+
+_CHK_ARCH_()
+{
+    	case `dpkg --print-architecture` in
+		aarch64)
+			ARCH="arm64" ;;
+		arm)
+			ARCH="armhf" ;;
+		amd64)
+			ARCH="amd64" ;;
+		i*86)
+			ARCH="i386" ;;
+		x86_64)
+			ARCH="amd64" ;;
+		*)
+			_ERR_ "" ;;
+		esac
+}
+
+_GET_HELP_()
+{
+	_OUT_ "Atilo \t $VER "
+	_OUT_ "$WORD[0]\n"
+	_OUT_ "$WORD[1]"
+	_OUT_ "$WORD[2]"
+	_OUT_ "list\t\t $WORD[3]"
+	_OUT_ "   --installed   $WORD[4]"
+	_OUT_ "remove\t\t $WORD[5]"
+	_OUT_ "install\t\t $WORD[6]"
+	_OUT_ "clean\t\t $WORD[7]"
+	_OUT_ "set\t\t $WORD[8]"
+	_OUT_ "help\t\t $WORD[9]\n"
+	_OUT_ "$WORD[10]"
+}
+
+_SHOW_MOO_()
+{
+	_OUT_ "
+                 (__) 
+                 (oo) 
+           /------\/ 
+          / |    ||   
+         *  /\---/\ 
+            ~~   ~~   
+		$WORD[11]"
+}
+
