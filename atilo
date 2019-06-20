@@ -112,3 +112,54 @@ _SHOW_MOO_()
 		$WORD[11]"
 }
 
+_GET_LIST_()
+{
+	_OUT_ "$WORD[12]\n"
+	for i in $LIUNX_LIST[@]
+	{
+		_OUT_ $i
+	}
+}
+
+_GET_LOCAL_()
+{
+	_OUT_ "$WORD[13]"
+	cd $ATILO_DIR
+	for i in $(ls ./)
+	do
+		if [ $i != "tmp" ]; then
+			_OUT_ $i
+		fi
+	done
+}
+
+_REMOVE_LINUX_()
+{
+	cd $ATILO_DIR
+	if [ -d $SELECTED ];then
+		_OUT_ "$WORD[14] $SELECTED [y/n]"
+		read a
+		if [ $a == "y" ];then
+			chmod -R 0755 $SELECTED
+			rm -rf $SELECTED
+			rm $PREFIX/bin/start$SELECTED
+			_OUT_ "WORD[15]"
+		else
+			exit 1
+	else
+		_ERR_ "$WORD[16] $SELECTED"
+}
+
+_REMOVE_TMPS_()
+{
+	_OUT_ $WORD[17]
+	rm -rf $ATILO_TMP/*
+}
+
+_DOWNLOAD_SELECTED_
+{
+	if [ -f $ATILO_TMP/$SELECTED ];then
+		_OUT_ $WORD[18]
+	else
+		_OUT_ $WORD[19]
+}
