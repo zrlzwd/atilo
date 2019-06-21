@@ -47,6 +47,7 @@ _UP_LOCALES_()
 	_OUT_ "Choose a language:"
 	read a
 	curl -o $ATILO_CONFIG/locales "https://raw.githubusercontent.com/YadominJinta/atilo/dev/src/locales/$k[a]"
+	chmod +x $ATILO_CONFIG/sources
 }
 
 _UP_SOURCES_()
@@ -63,6 +64,7 @@ _UP_SOURCES_()
 	_OUT_ "Choose a source:"
 	read a
 	curl -o $ATILO_CONFIG/sources "https://raw.githubusercontent.com/YadominJinta/atilo/dev/src/sources/$k[a]"
+	chmod +x $ATILO_CONFIG/sources
 	}
 }
 
@@ -146,8 +148,10 @@ _REMOVE_LINUX_()
 			_OUT_ "WORD[15]"
 		else
 			exit 1
+		fi
 	else
 		_ERR_ "$WORD[16] $SELECTED"
+	fi
 }
 
 _REMOVE_TMPS_()
@@ -156,10 +160,70 @@ _REMOVE_TMPS_()
 	rm -rf $ATILO_TMP/*
 }
 
-_DOWNLOAD_SELECTED_
+_DOWNLOAD_SELECTED_()
 {
 	if [ -f $ATILO_TMP/$SELECTED ];then
 		_OUT_ $WORD[18]
+		cd $ATILO_DIR
+		curl $URL -o $SELECTED --progress -C -
 	else
 		_OUT_ $WORD[19]
+	fi
 }
+
+_MAIN_()
+{
+	#Load Locales
+	if [ -f $ATILO_CONFIG/locales ];then
+		source $ATILO_CONFIG/locales
+	else
+		_UP_LOCALES_
+	fi
+
+	#Load Sources
+	if [ -f $ATILO_CONFIG/sources];then
+		source $ATILO_CONFIG/sources
+	else
+		_UP_SOURCES_
+	fi
+
+	# Choose a command
+	case $1 in 
+		help)
+			_GET_HELP_
+			;;
+		moo)
+			_SHOW_MOO_
+			;;
+		list|ls)
+			if [ $2 == "--installed" ];then
+				_GET_LOCAL_
+			else
+				_GET_LIST_
+			fi
+			;;
+		install|in)
+			_CHK_ARCH_
+			_INSTALL_LINUX_
+			;;
+		remove|rm)
+			_REMOVE_LINUX_
+			;;
+		clean)
+			_REMOVE_TMPS_
+			;;
+		set)
+			_UP_LOCALES_
+			_UP_SOURCES_
+			;;
+		"")
+			_GET_HELP_
+			_ERR_ "$WORD[20]"
+			;;
+		*)
+			_ERR_ "$WORD[21]"
+			;;
+		esac
+}
+
+_MAIN_ "$@"
